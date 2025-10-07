@@ -1,208 +1,131 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pizzaria Farinha & Lenha — Pedidos</title>
-  <meta name="description" content="Massa de longa fermentacao, forno a lenha. Salgadas 35 cm, doces 25 cm." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>html{scroll-behavior:smooth}</style>
-</head>
-<body class="bg-neutral-100">
-  <!-- Header com logo -->
-  <header class="bg-white border-b">
-    <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <img src="assets/logo.png" alt="Logo Farinha & Lenha" class="w-16 h-16 object-contain rounded-md border bg-white">
-        <div>
-          <h1 class="text-2xl md:text-3xl font-black">Pizzaria Farinha & Lenha</h1>
-          <p class="text-xs md:text-sm text-neutral-500">
-            Massa de longa fermentacao • Forno a lenha • Salgadas 35 cm • Doces 25 cm
-          </p>
-        </div>
-      </div>
-      <a href="#carrinho" class="rounded-lg px-3 py-2 bg-neutral-900 text-white text-sm font-semibold">Carrinho</a>
-    </div>
-  </header>
+<script>
+(function(){
+  function money(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+  var PRINT_WEBHOOK = localStorage.getItem('PRINT_WEBHOOK') || '';
+  var PRINT_KEY = localStorage.getItem('PRINT_KEY') || '';
+  var WHATSAPP_NUM = '+5522992290283';
 
-  <!-- Conteúdo -->
-  <main class="max-w-6xl mx-auto p-4">
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Coluna do cardápio -->
-      <div class="lg:col-span-2 space-y-6">
-        <!-- Tradicionais -->
-        <section class="bg-white rounded-2xl shadow overflow-hidden">
-          <div class="px-4 pt-4">
-            <h2 class="text-xl font-semibold">Tradicionais <span class="text-neutral-500">(R$ 43,90)</span></h2>
-          </div>
-          <div id="menu-trad" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
-        </section>
+  /* ====== DADOS (usando SUAS FOTOS) ====== */
+  // Tradicionais — R$ 43,90
+  var TRAD = [
+    {id:'mussarela',  name:'Mussarela',  price:43.90, img:'mussarela.jpg',  desc:'molho, mussarela e orégano.'},
+    {id:'calabresa',  name:'Calabresa',  price:43.90, img:'calabresa.jpg',   desc:'molho, mussarela, calabresa e cebola.'},
+    {id:'alho',       name:'Alho',       price:43.90, img:'alho.jpg',        desc:'molho, mussarela e alho.'},
+    {id:'presunto',   name:'Presunto',   price:43.90, img:'presunto.jpg',    desc:'molho, mussarela e presunto.'},
+    {id:'marguerita', name:'Marguerita', price:43.90, img:'marguerita.jpg',  desc:'molho, mussarela, tomate e manjericão.'}
+  ];
 
-        <!-- Premium -->
-        <section class="bg-white rounded-2xl shadow overflow-hidden">
-          <div class="px-4 pt-4">
-            <h2 class="text-xl font-semibold">Premium <span class="text-neutral-500">(R$ 50,90)</span></h2>
-          </div>
-          <div id="menu-prem" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
-        </section>
+  // Premium — R$ 50,90 (como no seu prompt)
+  var PREM = [
+    {id:'quatro-queijos',   name:'Quatro Queijos',      price:50.90, img:'quatro-queijos.jpg',    desc:'mussarela, provolone, parmesão e catupiry.'},
+    {id:'camarao-catupiry', name:'Camarão c/ Catupiry', price:50.90, img:'camarao-catupiry.jpg',  desc:'mussarela, camarão e catupiry.'},
+    {id:'bacon',            name:'Bacon',               price:50.90, img:'bacon.jpg',             desc:'mussarela e bacon.'},
+    {id:'bacon-ovos',       name:'Bacon c/ Ovos',       price:50.90, img:'bacon-ovos.jpg',        desc:'mussarela, bacon e ovos.'},
+    {id:'frango',           name:'Frango',              price:50.90, img:'frango.jpg',            desc:'mussarela e frango desfiado.'},
+    {id:'frango-catupiry',  name:'Frango c/ Catupiry',  price:50.90, img:'frango-catupiry.jpg',   desc:'mussarela, frango e catupiry.'},
+    {id:'portuguesa',       name:'Portuguesa',          price:50.90, img:'portuguesa.jpg',        desc:'mussarela, presunto, calabresa, pimentão, cebola, tomate e ovo.'},
+    {id:'tres-porquinhos',  name:'Três Porquinhos',     price:50.90, img:'tres-porquinhos.jpg',   desc:'mussarela, presunto, bacon e calabresa.'}
+  ];
 
-        <!-- Doces -->
-        <section class="bg-white rounded-2xl shadow overflow-hidden">
-          <div class="px-4 pt-4">
-            <h2 class="text-xl font-semibold">Doces <span class="text-neutral-500">(R$ 30,00)</span></h2>
-          </div>
-          <div id="menu-doces" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
-        </section>
+  // Doces (se quiser, adiciono depois com fotos)
+  var DOCES = [];
+  var BEBIDAS = [];
 
-        <!-- Bebidas -->
-        <section class="bg-white rounded-2xl shadow overflow-hidden">
-          <div class="px-4 pt-4">
-            <h2 class="text-xl font-semibold">Bebidas</h2>
-          </div>
-          <div id="menu-bebidas" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
-        </section>
-      </div>
+  var ITEMS = [].concat(TRAD, PREM, DOCES, BEBIDAS);
+  var cart = {};
 
-      <!-- Carrinho -->
-      <aside id="carrinho" class="bg-white rounded-2xl shadow p-4 h-max sticky top-6">
-        <h2 class="text-xl font-semibold mb-2">Seu carrinho</h2>
-        <div id="cart" class="text-sm text-neutral-700"></div>
-        <hr class="my-3" />
-        <div class="grid grid-cols-1 gap-2">
-          <input id="nome" class="border rounded-lg p-2 text-sm" placeholder="Seu nome" />
-          <input id="telefone" class="border rounded-lg p-2 text-sm" placeholder="Telefone" />
-          <textarea id="obs" class="w-full border rounded-lg p-2 text-sm" rows="3" placeholder="Observacoes (ex.: sem cebola)"></textarea>
-        </div>
-        <div class="mt-4 flex gap-2">
-          <button id="btn-whatsapp" class="flex-1 rounded-xl px-4 py-3 font-semibold bg-green-600 text-white">WhatsApp</button>
-          <button id="btn-site" class="flex-1 rounded-xl px-4 py-3 font-semibold bg-blue-600 text-white">Finalizar</button>
-        </div>
-        <p class="text-xs text-neutral-500 mt-2">
-          Finalizar envia para a ponte de impressao via PRINT_WEBHOOK.
-        </p>
-      </aside>
-    </section>
-  </main>
+  function card(it){
+    return ""
+      + "<div class='border rounded-xl overflow-hidden shadow-sm'>"
+      +   "<div class='aspect-[4/3] bg-neutral-100 overflow-hidden'>"
+      +     "<img src='assets/pizzas/"+it.img+"' alt='"+it.name+"' class='w-full h-full object-cover'>"
+      +   "</div>"
+      +   "<div class='p-3'>"
+      +     "<div class='font-semibold'>"+it.name+"</div>"
+      +     "<div class='text-xs text-neutral-600 mb-3'>"+(it.desc||"")+"</div>"
+      +     "<div class='flex items-center justify-between'>"
+      +       "<span class='text-sm font-semibold'>"+money(it.price)+"</span>"
+      +       "<div class='flex items-center gap-2'>"
+      +         "<button data-id='"+it.id+"' class='btn-add rounded-lg px-3 py-2 text-sm bg-neutral-900 text-white'>Adicionar</button>"
+      +         "<span id='qtd-"+it.id+"' class='text-sm w-6 text-center'>0</span>"
+      +         "<button data-id='"+it.id+"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200'>-</button>"
+      +       "</div>"
+      +     "</div>"
+      +   "</div>"
+      + "</div>";
+  }
 
-  <footer class="text-center text-xs text-neutral-500 py-10">
-    © <span id="year"></span> Pizzaria Farinha & Lenha
-  </footer>
+  function add(id){ cart[id]=(cart[id]||0)+1; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]; }
+  function rem(id){ if(!cart[id])return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]||0; }
 
-  <script>
-  (function(){
-    function money(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-    var PRINT_WEBHOOK = localStorage.getItem('PRINT_WEBHOOK') || '';
-    var PRINT_KEY = localStorage.getItem('PRINT_KEY') || '';
-    var WHATSAPP_NUM = '+5522992290283';
+  function renderList(where, arr){
+    var el=document.getElementById(where);
+    el.innerHTML = arr.map(card).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('.btn-add'), b => b.onclick=()=>add(b.dataset.id));
+    Array.prototype.forEach.call(el.querySelectorAll('.btn-rem'), b => b.onclick=()=>rem(b.dataset.id));
+  }
 
-    // ====== DADOS (usando as suas fotos) ======
-    var TRAD = [
-      {id:'portuguesa', name:'Portuguesa', price:43.90, desc:'mussarela, presunto, calabresa, pimentao, cebola, tomate e ovo.', img:'portuguesa.jpg'}
-    ];
-    var PREM = [
-      {id:'quatro-queijos', name:'Quatro Queijos', price:50.90, desc:'mussarela, provolone, parmesao e catupiry.', img:'quatro-queijos.jpg'},
-      {id:'frango-catupiry', name:'Frango c/ Catupiry', price:50.90, desc:'mussarela, frango desfiado e catupiry.', img:'frango-catupiry.jpg'}
-    ];
-    var DOCES  = [];   // pode preencher depois
-    var BEBIDAS= [];   // pode preencher depois
-
-    var ITEMS = [].concat(TRAD, PREM, DOCES, BEBIDAS);
-    var cart = {};
-
-    function card(it){
-      return ""
-        + "<div class='border rounded-xl overflow-hidden shadow-sm'>"
-        +   "<div class='aspect-[4/3] bg-neutral-100 overflow-hidden'>"
-        +     "<img src='assets/pizzas/"+it.img+"' alt='"+it.name+"' class='w-full h-full object-cover'>"
-        +   "</div>"
-        +   "<div class='p-3'>"
-        +     "<div class='font-semibold'>"+it.name+"</div>"
-        +     "<div class='text-xs text-neutral-600 mb-3'>"+(it.desc||"")+"</div>"
-        +     "<div class='flex items-center justify-between'>"
-        +       "<span class='text-sm font-semibold'>"+money(it.price)+"</span>"
-        +       "<div class='flex items-center gap-2'>"
-        +         "<button data-id='"+it.id+"' class='btn-add rounded-lg px-3 py-2 text-sm bg-neutral-900 text-white'>Adicionar</button>"
-        +         "<span id='qtd-"+it.id+"' class='text-sm w-6 text-center'>0</span>"
-        +         "<button data-id='"+it.id+"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200'>-</button>"
-        +       "</div>"
-        +     "</div>"
-        +   "</div>"
-        + "</div>";
+  function renderCart(){
+    var el = document.getElementById('cart');
+    var total=0, html='';
+    for (var id in cart){
+      var it = ITEMS.find(x => x.id===id);
+      var sub = it.price*cart[id]; total+=sub;
+      html += "<div class='flex justify-between'><span>"+cart[id]+"x "+it.name+"</span><span>"+money(sub)+"</span></div>";
     }
+    if(!html) html = "<div class='text-neutral-500'>Seu carrinho está vazio</div>";
+    html += "<div class='mt-2 font-semibold flex justify-between'><span>Total</span><span>"+money(total)+"</span></div>";
+    el.innerHTML = html;
+  }
 
-    function add(id){ cart[id]=(cart[id]||0)+1; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]; }
-    function rem(id){ if(!cart[id])return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]||0; }
-
-    function renderList(where, arr){
-      var el=document.getElementById(where);
-      el.innerHTML = arr.map(card).join('');
-      Array.prototype.forEach.call(el.querySelectorAll('.btn-add'), function(b){ b.onclick=function(){ add(b.getAttribute('data-id')); }; });
-      Array.prototype.forEach.call(el.querySelectorAll('.btn-rem'), function(b){ b.onclick=function(){ rem(b.getAttribute('data-id')); }; });
+  function payload(){
+    var items=[], total=0;
+    for (var id in cart){
+      var it = ITEMS.find(x => x.id===id);
+      var sub = it.price*cart[id]; total+=sub;
+      items.push({id:id, name:it.name, qty:cart[id], unit:it.price, subtotal:sub});
     }
+    return {items, total, nome:document.getElementById('nome').value.trim(), telefone:document.getElementById('telefone').value.trim(), obs:document.getElementById('obs').value.trim()};
+  }
 
-    function renderCart(){
-      var el = document.getElementById('cart');
-      var total=0, html='';
-      for (var id in cart){
-        var it = ITEMS.find(function(x){ return x.id===id; });
-        var sub = it.price*cart[id]; total+=sub;
-        html += "<div class='flex justify-between'><span>"+cart[id]+"x "+it.name+"</span><span>"+money(sub)+"</span></div>";
-      }
-      if(!html) html = "<div class='text-neutral-500'>Seu carrinho esta vazio</div>";
-      html += "<div class='mt-2 font-semibold flex justify-between'><span>Total</span><span>"+money(total)+"</span></div>";
-      el.innerHTML = html;
-    }
+  function whatsappText(p){
+    var linhas = ["*Novo pedido* — Farinha & Lenha"];
+    if(p.items.length){ linhas.push(p.items.map(i=>"• "+i.qty+"x "+i.name+" — "+money(i.subtotal)).join("\n")); }
+    linhas.push("*Total:* "+money(p.total));
+    linhas.push("Nome: "+p.nome);
+    linhas.push("Telefone: "+p.telefone);
+    if(p.obs) linhas.push("Obs: "+p.obs);
+    return encodeURIComponent(linhas.join("\n"));
+  }
 
-    function payload(){
-      var items=[], total=0;
-      for (var id in cart){
-        var it = ITEMS.find(function(x){ return x.id===id; });
-        var sub = it.price*cart[id]; total+=sub;
-        items.push({id:id, name:it.name, qty:cart[id], unit:it.price, subtotal:sub});
-      }
-      return {items:items, total:total, nome:document.getElementById('nome').value.trim(), telefone:document.getElementById('telefone').value.trim(), obs:document.getElementById('obs').value.trim()};
-    }
+  function mount(){
+    renderList('menu-trad', TRAD);
+    renderList('menu-prem', PREM);
+    renderList('menu-doces', DOCES);
+    renderList('menu-bebidas', BEBIDAS);
+    renderCart();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    function whatsappText(p){
-      var linhas = ["*Novo pedido* — Farinha & Lenha"];
-      if(p.items.length){ linhas.push(p.items.map(function(i){ return "• "+i.qty+"x "+i.name+" — "+money(i.subtotal); }).join("\n")); }
-      linhas.push("*Total:* "+money(p.total));
-      linhas.push("Nome: "+p.nome);
-      linhas.push("Telefone: "+p.telefone);
-      if(p.obs) linhas.push("Obs: "+p.obs);
-      return encodeURIComponent(linhas.join("\n"));
-    }
+    document.getElementById('btn-whatsapp').onclick = function(){
+      var p = payload();
+      if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
+      var url = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"") +"?text="+ whatsappText(p);
+      window.open(url, "_blank");
+    };
 
-    function mount(){
-      renderList('menu-trad', TRAD);
-      renderList('menu-prem', PREM);
-      renderList('menu-doces', DOCES);
-      renderList('menu-bebidas', BEBIDAS);
-      renderCart();
-      document.getElementById('year').textContent = new Date().getFullYear();
-
-      document.getElementById('btn-whatsapp').onclick = function(){
-        var p = payload();
-        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
-        var url = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"") +"?text="+ whatsappText(p);
-        window.open(url, "_blank");
-      };
-
-      document.getElementById('btn-site').onclick = async function(){
-        var p = payload();
-        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
-        if(!PRINT_WEBHOOK){ alert("Defina PRINT_WEBHOOK: localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')"); return; }
-        try{
-          var headers = {"Content-Type":"application/json"};
-          if(PRINT_KEY) headers["X-KEY"]=PRINT_KEY;
-          var r = await fetch(PRINT_WEBHOOK, {method:"POST", headers:headers, body: JSON.stringify(p)});
-          if(!r.ok) throw new Error("Falha ao enviar ("+r.status+")");
-          alert("Pedido enviado!");
-        }catch(e){ alert("Erro: "+e.message); }
-      };
-    }
-    document.addEventListener('DOMContentLoaded', mount);
-  })();
-  </script>
-</body>
-</html>
+    document.getElementById('btn-site').onclick = async function(){
+      var p = payload();
+      if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
+      if(!PRINT_WEBHOOK){ alert("Defina PRINT_WEBHOOK: localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')"); return; }
+      try{
+        var headers = {"Content-Type":"application/json"};
+        if(PRINT_KEY) headers["X-KEY"]=PRINT_KEY;
+        var r = await fetch(PRINT_WEBHOOK, {method:"POST", headers, body: JSON.stringify(p)});
+        if(!r.ok) throw new Error("Falha ao enviar ("+r.status+")");
+        alert("Pedido enviado!");
+      }catch(e){ alert("Erro: "+e.message); }
+    };
+  }
+  document.addEventListener('DOMContentLoaded', mount);
+})();
+</script>
