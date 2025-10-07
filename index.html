@@ -1,371 +1,207 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pizzaria Farinha & Lenha — Pedidos</title>
-  <meta name="description" content="Pizzas de longa fermentacao, forno a lenha. Salgadas 35 cm, doces 25 cm. Atendimento 18h–23h.">
+  <meta name="description" content="Massa de longa fermentacao, forno a lenha. Salgadas 35 cm, doces 25 cm." />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>html{scroll-behavior:smooth}</style>
 </head>
 <body class="bg-neutral-100">
-  <header class="bg-white border-b sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div>
-        <h1 class="text-2xl font-black">Pizzaria Farinha & Lenha</h1>
-        <p class="text-xs text-neutral-500">Massa de longa fermentacao • Forno a lenha • Salgadas 35 cm • Doces 25 cm</p>
+  <!-- Header com logo -->
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <img src="assets/logo.png" alt="Logo Farinha & Lenha" class="w-16 h-16 object-contain rounded-md border bg-white">
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black">Pizzaria Farinha & Lenha</h1>
+          <p class="text-xs md:text-sm text-neutral-500">
+            Massa de longa fermentacao • Forno a lenha • Salgadas 35 cm • Doces 25 cm
+          </p>
+        </div>
       </div>
       <a href="#carrinho" class="rounded-lg px-3 py-2 bg-neutral-900 text-white text-sm font-semibold">Carrinho</a>
     </div>
   </header>
 
-  <div id="hoursBanner" class="hidden bg-yellow-100 border-b border-yellow-300 text-yellow-900">
-    <div class="max-w-6xl mx-auto px-4 py-3 text-sm">
-      Nosso horario de atendimento e das <b>18h as 23h</b>. Assim que abrirmos, voltamos a atender.
-      Telefone: (22) 99229-0283 - @farinhalenha
-    </div>
-  </div>
-
+  <!-- Conteúdo -->
   <main class="max-w-6xl mx-auto p-4">
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div class="lg:col-span-2 space-y-4">
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Cardapio — Tradicionais (R$ 43,90)</h2>
-          <div id="menu-trad" class="space-y-3"></div>
-        </section>
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Cardapio — Premium (R$ 50,90)</h2>
-          <div id="menu-prem" class="space-y-3"></div>
-        </section>
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Cardapio — Doces (R$ 30,00)</h2>
-          <div id="menu-doces" class="space-y-3"></div>
-        </section>
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Bebidas</h2>
-          <div id="menu-bebidas" class="space-y-3"></div>
-        </section>
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Combos</h2>
-          <div id="menu-combos" class="space-y-3"></div>
-          <p class="text-sm text-neutral-600 mt-2">Voce escolhe o sabor da pizza e o refrigerante.</p>
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Coluna do cardápio -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Tradicionais -->
+        <section class="bg-white rounded-2xl shadow overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Tradicionais <span class="text-neutral-500">(R$ 43,90)</span></h2>
+          </div>
+          <div id="menu-trad" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
         </section>
 
-        <section class="bg-white rounded-2xl shadow p-4">
-          <h2 class="text-xl font-semibold mb-1">Taxas de Entrega</h2>
-          <p class="text-sm text-neutral-600">Informe seu bairro no carrinho para calcular automaticamente.</p>
-          <details class="mt-2">
-            <summary class="cursor-pointer text-sm font-semibold">Ver tabela completa</summary>
-            <div id="taxasTabela" class="text-sm text-neutral-700 mt-2"></div>
-          </details>
+        <!-- Premium -->
+        <section class="bg-white rounded-2xl shadow overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Premium <span class="text-neutral-500">(R$ 50,90)</span></h2>
+          </div>
+          <div id="menu-prem" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+
+        <!-- Doces -->
+        <section class="bg-white rounded-2xl shadow overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Doces <span class="text-neutral-500">(R$ 30,00)</span></h2>
+          </div>
+          <div id="menu-doces" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+
+        <!-- Bebidas -->
+        <section class="bg-white rounded-2xl shadow overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Bebidas</h2>
+          </div>
+          <div id="menu-bebidas" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
         </section>
       </div>
 
-      <aside id="carrinho" class="bg-white rounded-2xl shadow p-4 h-max sticky top-20">
+      <!-- Carrinho -->
+      <aside id="carrinho" class="bg-white rounded-2xl shadow p-4 h-max sticky top-6">
         <h2 class="text-xl font-semibold mb-2">Seu carrinho</h2>
         <div id="cart" class="text-sm text-neutral-700"></div>
-        <hr class="my-3">
+        <hr class="my-3" />
         <div class="grid grid-cols-1 gap-2">
-          <select id="retiradaEntrega" class="border rounded-lg p-2 text-sm">
-            <option value="">Entrega ou retirada?</option>
-            <option value="retirada">Retirada na pizzaria</option>
-            <option value="entrega">Entrega</option>
-          </select>
-          <input id="bairro" class="border rounded-lg p-2 text-sm" placeholder="Bairro (para calcular taxa)">
-          <input id="nome" class="border rounded-lg p-2 text-sm" placeholder="Seu nome">
-          <input id="endereco" class="border rounded-lg p-2 text-sm" placeholder="Endereco (se entrega)">
-          <input id="telefone" class="border rounded-lg p-2 text-sm" placeholder="Telefone">
-          <select id="pagamento" class="border rounded-lg p-2 text-sm">
-            <option value="">Forma de pagamento</option>
-            <option>Pix</option><option>Credito</option><option>Debito</option><option>Dinheiro</option>
-          </select>
-          <input id="troco" class="border rounded-lg p-2 text-sm" placeholder="Troco para (se dinheiro)">
-          <textarea id="obs" class="w-full border rounded-lg p-2 text-sm" rows="3" placeholder="Sem cebola, cortar em 8, etc."></textarea>
+          <input id="nome" class="border rounded-lg p-2 text-sm" placeholder="Seu nome" />
+          <input id="telefone" class="border rounded-lg p-2 text-sm" placeholder="Telefone" />
+          <textarea id="obs" class="w-full border rounded-lg p-2 text-sm" rows="3" placeholder="Observacoes (ex.: sem cebola)"></textarea>
         </div>
         <div class="mt-4 flex gap-2">
           <button id="btn-whatsapp" class="flex-1 rounded-xl px-4 py-3 font-semibold bg-green-600 text-white">WhatsApp</button>
           <button id="btn-site" class="flex-1 rounded-xl px-4 py-3 font-semibold bg-blue-600 text-white">Finalizar</button>
         </div>
-        <p class="text-xs text-neutral-500 mt-2">Finalizar envia para a ponte de impressao (80mm) via PRINT_WEBHOOK.</p>
+        <p class="text-xs text-neutral-500 mt-2">
+          Finalizar envia para a ponte de impressao via PRINT_WEBHOOK.
+        </p>
       </aside>
     </section>
   </main>
 
   <footer class="text-center text-xs text-neutral-500 py-10">
-    © <span id="year"></span> Pizzaria Farinha & Lenha — Travessa Curitiba, 12 – Jardim Olinda, Cabo Frio – RJ
+    © <span id="year"></span> Pizzaria Farinha & Lenha
   </footer>
 
   <script>
   (function(){
-    var STORE_NAME = "Pizzaria Farinha & Lenha";
-    var WHATSAPP_NUM = "+5522992290283";
-    var TIMEZONE = "America/Sao_Paulo";
-    var OPEN_HOUR = 18, CLOSE_HOUR = 23;
-    var PRINT_WEBHOOK = localStorage.getItem("PRINT_WEBHOOK") || "";
-    var PRINT_KEY = localStorage.getItem("PRINT_KEY") || "";
+    function money(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+    var PRINT_WEBHOOK = localStorage.getItem('PRINT_WEBHOOK') || '';
+    var PRINT_KEY = localStorage.getItem('PRINT_KEY') || '';
+    var WHATSAPP_NUM = '+5522992290283';
 
-    function em(v){ return v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
-    function money(v){ return v.toLocaleString("pt-BR",{style:"currency", currency:"BRL"}); }
+    // ====== DADOS (usando as suas fotos) ======
+    var TRAD = [
+      {id:'portuguesa', name:'Portuguesa', price:43.90, desc:'mussarela, presunto, calabresa, pimentao, cebola, tomate e ovo.', img:'portuguesa.jpg'}
+    ];
+    var PREM = [
+      {id:'quatro-queijos', name:'Quatro Queijos', price:50.90, desc:'mussarela, provolone, parmesao e catupiry.', img:'quatro-queijos.jpg'},
+      {id:'frango-catupiry', name:'Frango c/ Catupiry', price:50.90, desc:'mussarela, frango desfiado e catupiry.', img:'frango-catupiry.jpg'}
+    ];
+    var DOCES  = [];   // pode preencher depois
+    var BEBIDAS= [];   // pode preencher depois
 
-    var TRADICIONAIS = [
-      {id:"mussarela", name:"Mussarela", price:43.90, desc:"molho, mussarela e oregano."},
-      {id:"calabresa", name:"Calabresa", price:43.90, desc:"molho, mussarela, calabresa, cebola e oregano."},
-      {id:"alho", name:"Alho", price:43.90, desc:"molho, mussarela, alho e oregano."},
-      {id:"presunto", name:"Presunto", price:43.90, desc:"molho, mussarela, presunto e oregano."},
-      {id:"marguerita", name:"Marguerita", price:43.90, desc:"molho, mussarela, tomate, manjericao e oregano."}
-    ];
-    var PREMIUM = [
-      {id:"quatro-queijos", name:"Quatro Queijos", price:50.90, desc:"mussarela, provolone, parmesao, catupiry e oregano."},
-      {id:"camarao-catupiry", name:"Camarao c/ Catupiry", price:50.90, desc:"mussarela, camarao, catupiry e oregano."},
-      {id:"bacon", name:"Bacon", price:50.90, desc:"mussarela, bacon e oregano."},
-      {id:"bacon-ovos", name:"Bacon c/ Ovos", price:50.90, desc:"mussarela, bacon, ovos e oregano."},
-      {id:"frango", name:"Frango", price:50.90, desc:"mussarela, frango desfiado e oregano."},
-      {id:"frango-catupiry", name:"Frango c/ Catupiry", price:50.90, desc:"mussarela, frango desfiado, catupiry e oregano."},
-      {id:"portuguesa", name:"Portuguesa", price:50.90, desc:"mussarela, pimentao, cebola, ovo, tomate, calabresa e oregano."},
-      {id:"tres-porquinhos", name:"Tres Porquinhos", price:50.90, desc:"mussarela, presunto, bacon, calabresa e oregano."}
-    ];
-    var DOCES = [
-      {id:"chocolate", name:"Chocolate", price:30.00, desc:""},
-      {id:"prestigio", name:"Prestigio", price:30.00, desc:"chocolate e coco ralado."},
-      {id:"pacoca", name:"Pacoca", price:30.00, desc:"chocolate e pacoca."}
-    ];
-    var BEBIDAS = [
-      {id:"guarana15", name:"Guarana Antarctica 1,5L", price:12.00},
-      {id:"guaranaz15", name:"Guarana Antarctica Zero 1,5L", price:12.00},
-      {id:"coca15", name:"Coca-Cola 1,5L", price:13.00},
-      {id:"cocaz15", name:"Coca-Cola Zero 1,5L", price:13.00}
-    ];
-    var COMBOS = [
-      {id:"combo1", name:"Combo 1", price:50.90, desc:"1 Pizza Tradicional (35 cm) + 1 Refrigerante 1,5L"},
-      {id:"combo2", name:"Combo 2", price:57.90, desc:"1 Pizza Premium (35 cm) + 1 Broto Doce (25 cm)"}
-    ];
-
-    var TAXAS = [
-      {valor:6.99, bairros:["Centro"]},
-      {valor:8.00, bairros:["Sao Bento","Passagem","Vila Nova","Jardim Machado","Itajuru","Orla da Praia","Vila Nova","Algodoal","Parque Riviera","Braga","Parque Central","Portinho","Jardim Flamboyant","Jardim Caicara","Palmeiras","Novo Portinho","Jardim Excelsior","Sao Cristovao","Sao Francisco","Ville Blanche","Moruba","Buraco do Boi","Parque Burle","Praia do Siqueira (ate a avenida)"]},
-      {valor:10.00, bairros:["Praia do Siqueira (apos a avenida)","Jardim Nautilus","Guarani","Celula Mater","Jardim Olinda","Jacare","Gamboa","Manoel Correa","Portinho (Ilha do Anjo)"]},
-      {valor:12.00, bairros:["Dunas","Recanto das Dunas","Boca do Mato"]},
-      {valor:15.00, bairros:["Vila do Sol","Vila do Ar","Jardim Esperanca","Porto do Carro","Bosque do Pero","Condominio dos Passaros","Pero","Ogiva","Caminho Verde","Foguete","Baixo Grande","Vinhateiro","Monte Alegre 1 e 2"]},
-      {valor:20.00, bairros:["Tangara","Guriri","Jardim Pero","Reserva do Pero","Parque Eldorado","Caminho de Buzios","Minha Casa Minha Vida","Campo Redondo","Bairro Sao Joao","Parque Estoril","Alecrim"]},
-      {valor:25.00, bairros:["Arraial do Cabo (Centro)","Sao Pedro (Centro)","Jose Goncalves","Aeroporto"]},
-      {valor:30.00, bairros:["Balneario","Poco Fundo","Praia do Sudoeste","Boqueirao","Pontal do Atalaia","Jardim das Acacias","Monte Alto"]},
-      {valor:35.00, bairros:["Praia Linda","Baleia","Figueira","Sao Mateus","Geriba","Manguinhos","Tucuns","Portico","Cem Bracas"]},
-      {valor:40.00, bairros:["Buzios (Centro, Joao Fernandes, Pernambuco)","Iguaba Grande"]},
-      {valor:50.00, bairros:["Iguabinha","Tamoios"]},
-      {valor:60.00, bairros:["Aquarius","Bairro Sao Joao"]},
-      {valor:70.00, bairros:["Rio das Ostras (ate a ponte)","Araruama (ate o centro)"]},
-      {valor:100.00, bairros:["Macae (Centro)","Saquarema (Centro)"]}
-    ];
-
-    var ITEMS = [].concat(TRADICIONAIS, PREMIUM, DOCES, BEBIDAS, COMBOS);
+    var ITEMS = [].concat(TRAD, PREM, DOCES, BEBIDAS);
     var cart = {};
 
-    function isOpenNow(){
-      var now = new Date();
-      var hour = new Date(now.toLocaleString("en-US", { timeZone: TIMEZONE })).getHours();
-      return hour >= OPEN_HOUR && hour < CLOSE_HOUR;
+    function card(it){
+      return ""
+        + "<div class='border rounded-xl overflow-hidden shadow-sm'>"
+        +   "<div class='aspect-[4/3] bg-neutral-100 overflow-hidden'>"
+        +     "<img src='assets/pizzas/"+it.img+"' alt='"+it.name+"' class='w-full h-full object-cover'>"
+        +   "</div>"
+        +   "<div class='p-3'>"
+        +     "<div class='font-semibold'>"+it.name+"</div>"
+        +     "<div class='text-xs text-neutral-600 mb-3'>"+(it.desc||"")+"</div>"
+        +     "<div class='flex items-center justify-between'>"
+        +       "<span class='text-sm font-semibold'>"+money(it.price)+"</span>"
+        +       "<div class='flex items-center gap-2'>"
+        +         "<button data-id='"+it.id+"' class='btn-add rounded-lg px-3 py-2 text-sm bg-neutral-900 text-white'>Adicionar</button>"
+        +         "<span id='qtd-"+it.id+"' class='text-sm w-6 text-center'>0</span>"
+        +         "<button data-id='"+it.id+"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200'>-</button>"
+        +       "</div>"
+        +     "</div>"
+        +   "</div>"
+        + "</div>";
     }
 
-    function renderHoursBanner(){
-      var open = isOpenNow();
-      var banner = document.getElementById("hoursBanner");
-      var btnW = document.getElementById("btn-whatsapp");
-      var btnS = document.getElementById("btn-site");
-      if (!open){
-        banner.classList.remove("hidden");
-        [btnW, btnS].forEach(function(b){ b.setAttribute("disabled","disabled"); b.classList.add("opacity-50","cursor-not-allowed"); });
-      } else {
-        banner.classList.add("hidden");
-        [btnW, btnS].forEach(function(b){ b.removeAttribute("disabled"); b.classList.remove("opacity-50","cursor-not-allowed"); });
-      }
-    }
+    function add(id){ cart[id]=(cart[id]||0)+1; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]; }
+    function rem(id){ if(!cart[id])return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]||0; }
 
-    function add(id){ cart[id] = (cart[id]||0)+1; renderCart(); }
-    function removeItem(id){ if(!cart[id]) return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); }
-
-    function renderList(containerId, arr){
-      var el = document.getElementById(containerId);
-      el.innerHTML = "";
-      arr.forEach(function(it){
-        var row = document.createElement("div");
-        row.className = "flex items-start justify-between gap-3 border rounded-xl p-3";
-        row.innerHTML =
-          "<div><div class='font-medium'>"+ it.name +
-          " <span class='text-neutral-500'>— "+ money(it.price) +"</span></div>" +
-          "<div class='text-xs text-neutral-600'>"+ (it.desc||"") +"</div></div>" +
-          "<div class='flex items-center gap-2'>" +
-          "<button data-id='"+ it.id +"' class='btn-add rounded-lg px-3 py-2 text-sm bg-neutral-900 text-white'>Adicionar</button>" +
-          "<span id='qtd-"+ it.id +"' class='text-sm w-6 text-center'>0</span>" +
-          "<button data-id='"+ it.id +"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200'>-</button>"+
-          "</div>";
-        el.appendChild(row);
-      });
-      Array.prototype.forEach.call(el.querySelectorAll(".btn-add"), function(b){
-        b.onclick = function(){ add(b.getAttribute("data-id")); };
-      });
-      Array.prototype.forEach.call(el.querySelectorAll(".btn-rem"), function(b){
-        b.onclick = function(){ removeItem(b.getAttribute("data-id")); };
-      });
-    }
-
-    function calcTaxa(bairroInput){
-      var b = (bairroInput||"").trim().toLowerCase();
-      if(!b) return {valor:0, found:false, note:""};
-      for(var i=0;i<TAXAS.length;i++){
-        var t = TAXAS[i];
-        for(var j=0;j<t.bairros.length;j++){
-          var n = t.bairros[j];
-          var ln = n.toLowerCase();
-          if(ln === b || ln.indexOf(b) >= 0) return {valor:t.valor, found:true, note:""};
-        }
-      }
-      return {valor:0, found:false, note:"Sem taxa cadastrada. Envie CEP ou referencia para confirmar. Podemos conceder R$ 3,00 de desconto como cortesia."};
-    }
-
-    function renderTaxasTabela(){
-      var box = document.getElementById("taxasTabela");
-      var html = "";
-      TAXAS.forEach(function(t){
-        html += "<div class='mb-2'><b>"+ em(t.valor) +"</b><br><span class='text-neutral-600'>"+ t.bairros.join(", ") +"</span></div>";
-      });
-      box.innerHTML = html;
+    function renderList(where, arr){
+      var el=document.getElementById(where);
+      el.innerHTML = arr.map(card).join('');
+      Array.prototype.forEach.call(el.querySelectorAll('.btn-add'), function(b){ b.onclick=function(){ add(b.getAttribute('data-id')); }; });
+      Array.prototype.forEach.call(el.querySelectorAll('.btn-rem'), function(b){ b.onclick=function(){ rem(b.getAttribute('data-id')); }; });
     }
 
     function renderCart(){
-      var el = document.getElementById("cart");
-      var subtotal = 0;
-      var html = "";
+      var el = document.getElementById('cart');
+      var total=0, html='';
       for (var id in cart){
-        var q = cart[id];
         var it = ITEMS.find(function(x){ return x.id===id; });
-        var sub = it.price*q; subtotal+=sub;
-        html += "<div class='flex justify-between'><span>"+ q +"x "+ it.name +"</span><span>"+ money(sub) +"</span></div>";
+        var sub = it.price*cart[id]; total+=sub;
+        html += "<div class='flex justify-between'><span>"+cart[id]+"x "+it.name+"</span><span>"+money(sub)+"</span></div>";
       }
       if(!html) html = "<div class='text-neutral-500'>Seu carrinho esta vazio</div>";
-      var bairro = document.getElementById("bairro").value;
-      var tk = calcTaxa(bairro);
-      html += "<div class='mt-2 flex justify-between font-semibold'><span>Subtotal</span><span>"+ money(subtotal) +"</span></div>";
-      html += "<div class='flex justify-between'><span>Taxa de entrega</span><span>"+ (tk.found? money(tk.valor): "-") +"</span></div>";
-      html += "<div class='mt-1 flex justify-between text-lg font-bold'><span>Total</span><span>"+ money(subtotal + (tk.found? tk.valor:0)) +"</span></div>";
+      html += "<div class='mt-2 font-semibold flex justify-between'><span>Total</span><span>"+money(total)+"</span></div>";
       el.innerHTML = html;
-      for (var id2 in cart){
-        var span = document.getElementById("qtd-"+id2);
-        if(span) span.textContent = cart[id2];
-      }
     }
 
     function payload(){
-      var items = [];
+      var items=[], total=0;
       for (var id in cart){
-        var qty = cart[id];
         var it = ITEMS.find(function(x){ return x.id===id; });
-        items.push({ id:id, name:it.name, qty:qty, unit:it.price, subtotal: qty*it.price });
+        var sub = it.price*cart[id]; total+=sub;
+        items.push({id:id, name:it.name, qty:cart[id], unit:it.price, subtotal:sub});
       }
-      var bairro = document.getElementById("bairro").value.trim();
-      var tx = calcTaxa(bairro);
-      var p = {
-        store: STORE_NAME,
-        nome: document.getElementById("nome").value.trim(),
-        endereco: document.getElementById("endereco").value.trim(),
-        telefone: document.getElementById("telefone").value.trim(),
-        obs: document.getElementById("obs").value.trim(),
-        modalidade: document.getElementById("retiradaEntrega").value,
-        bairro: bairro,
-        pagamento: document.getElementById("pagamento").value,
-        troco: document.getElementById("troco").value.trim(),
-        items: items
-      };
-      var subtotal = 0; items.forEach(function(i){ subtotal += i.subtotal; });
-      p.subtotal = subtotal;
-      p.taxa = tx.found ? tx.valor : 0;
-      p.total = p.subtotal + p.taxa;
-      p.created_at = new Date().toISOString();
-      return p;
-    }
-
-    function resumoTexto(p){
-      var linhas = [];
-      linhas.push("Resumo do pedido:");
-      if(p.items.length){ linhas.push(p.items.map(function(i){return "• "+i.qty+"x "+i.name;}).join("\n")); }
-      if(p.obs) linhas.push("• Obs: "+p.obs);
-      if(p.modalidade==="retirada"){
-        linhas.push("• Retirada: Travessa Curitiba, 12 – Jardim Olinda, Cabo Frio – RJ");
-      } else if(p.modalidade==="entrega"){
-        linhas.push("• Entrega — Bairro: "+p.bairro+(p.taxa? " — Taxa: "+em(p.taxa):""));
-      }
-      if(p.pagamento) linhas.push("• Pagamento: "+p.pagamento+(p.troco? " — Troco para "+p.troco:""));
-      linhas.push("• Tempo estimado: 40 minutos");
-      linhas.push("Total aproximado: "+em(p.total));
-      return linhas.join("\n");
+      return {items:items, total:total, nome:document.getElementById('nome').value.trim(), telefone:document.getElementById('telefone').value.trim(), obs:document.getElementById('obs').value.trim()};
     }
 
     function whatsappText(p){
-      var linhas = [];
-      linhas.push("*Novo pedido* — "+STORE_NAME);
-      if(p.items.length){ linhas.push(p.items.map(function(i){return "• "+i.qty+"x "+i.name+" — "+em(i.subtotal);}).join("\n")); }
-      linhas.push("*Subtotal:* "+em(p.subtotal));
-      if(p.modalidade==="entrega" && p.taxa){ linhas.push("*Taxa:* "+em(p.taxa)); }
-      linhas.push("*Total:* "+em(p.total));
-      linhas.push("");
-      linhas.push(p.modalidade==="retirada" ? "Retirada: Travessa Curitiba, 12 – Jardim Olinda, Cabo Frio – RJ" : "Entrega — Bairro: "+p.bairro);
-      linhas.push("Pagamento: "+(p.pagamento || "-")+(p.troco? " — Troco para "+p.troco:""));
+      var linhas = ["*Novo pedido* — Farinha & Lenha"];
+      if(p.items.length){ linhas.push(p.items.map(function(i){ return "• "+i.qty+"x "+i.name+" — "+money(i.subtotal); }).join("\n")); }
+      linhas.push("*Total:* "+money(p.total));
       linhas.push("Nome: "+p.nome);
-      linhas.push("Endereco: "+(p.endereco || "-"));
       linhas.push("Telefone: "+p.telefone);
       if(p.obs) linhas.push("Obs: "+p.obs);
       return encodeURIComponent(linhas.join("\n"));
     }
 
     function mount(){
-      renderList("menu-trad", TRADICIONAIS);
-      renderList("menu-prem", PREMIUM);
-      renderList("menu-doces", DOCES);
-      renderList("menu-bebidas", BEBIDAS);
-      renderList("menu-combos", COMBOS);
-      renderTaxasTabela();
-      renderCart(); renderHoursBanner();
-      var bairroEl = document.getElementById("bairro");
-      if (bairroEl) bairroEl.addEventListener("input", renderCart);
-      var modEl = document.getElementById("retiradaEntrega");
-      if (modEl) modEl.addEventListener("change", renderCart);
+      renderList('menu-trad', TRAD);
+      renderList('menu-prem', PREM);
+      renderList('menu-doces', DOCES);
+      renderList('menu-bebidas', BEBIDAS);
+      renderCart();
+      document.getElementById('year').textContent = new Date().getFullYear();
 
-      document.getElementById("btn-whatsapp").onclick = function () {
-        if(!isOpenNow()){ alert("Nosso horario de atendimento e das 18h as 23h."); return; }
+      document.getElementById('btn-whatsapp').onclick = function(){
         var p = payload();
-        if(!p.nome || !p.telefone || p.items.length===0){
-          alert("Preencha nome, telefone e adicione itens ao carrinho.");
-          return;
-        }
+        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
         var url = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"") +"?text="+ whatsappText(p);
-        window.open(url,"_blank");
+        window.open(url, "_blank");
       };
 
-      document.getElementById("btn-site").onclick = async function () {
-        if(!isOpenNow()){ alert("Nosso horario de atendimento e das 18h as 23h."); return; }
+      document.getElementById('btn-site').onclick = async function(){
         var p = payload();
-        if(!p.nome || !p.telefone || p.items.length===0){
-          alert("Preencha nome, telefone e adicione itens ao carrinho.");
-          return;
-        }
-        if(!PRINT_WEBHOOK){
-          alert("Defina PRINT_WEBHOOK (F12): localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')");
-          return;
-        }
+        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
+        if(!PRINT_WEBHOOK){ alert("Defina PRINT_WEBHOOK: localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')"); return; }
         try{
           var headers = {"Content-Type":"application/json"};
-          if(PRINT_KEY) headers["X-KEY"] = PRINT_KEY;
+          if(PRINT_KEY) headers["X-KEY"]=PRINT_KEY;
           var r = await fetch(PRINT_WEBHOOK, {method:"POST", headers:headers, body: JSON.stringify(p)});
           if(!r.ok) throw new Error("Falha ao enviar ("+r.status+")");
-          alert("Pedido enviado! \n\n"+resumoTexto(p));
-        }catch(e){
-          alert("Erro: "+ e.message);
-        }
+          alert("Pedido enviado!");
+        }catch(e){ alert("Erro: "+e.message); }
       };
-
-      document.getElementById("year").textContent = new Date().getFullYear();
     }
-
-    document.addEventListener("DOMContentLoaded", mount);
+    document.addEventListener('DOMContentLoaded', mount);
   })();
   </script>
 </body>
