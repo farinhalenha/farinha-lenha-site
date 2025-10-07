@@ -1,131 +1,440 @@
-<script>
-(function(){
-  function money(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-  var PRINT_WEBHOOK = localStorage.getItem('PRINT_WEBHOOK') || '';
-  var PRINT_KEY = localStorage.getItem('PRINT_KEY') || '';
-  var WHATSAPP_NUM = '+5522992290283';
-
-  /* ====== DADOS (usando SUAS FOTOS) ====== */
-  // Tradicionais — R$ 43,90
-  var TRAD = [
-    {id:'mussarela',  name:'Mussarela',  price:43.90, img:'mussarela.jpg',  desc:'molho, mussarela e orégano.'},
-    {id:'calabresa',  name:'Calabresa',  price:43.90, img:'calabresa.jpg',   desc:'molho, mussarela, calabresa e cebola.'},
-    {id:'alho',       name:'Alho',       price:43.90, img:'alho.jpg',        desc:'molho, mussarela e alho.'},
-    {id:'presunto',   name:'Presunto',   price:43.90, img:'presunto.jpg',    desc:'molho, mussarela e presunto.'},
-    {id:'marguerita', name:'Marguerita', price:43.90, img:'marguerita.jpg',  desc:'molho, mussarela, tomate e manjericão.'}
-  ];
-
-  // Premium — R$ 50,90 (como no seu prompt)
-  var PREM = [
-    {id:'quatro-queijos',   name:'Quatro Queijos',      price:50.90, img:'quatro-queijos.jpg',    desc:'mussarela, provolone, parmesão e catupiry.'},
-    {id:'camarao-catupiry', name:'Camarão c/ Catupiry', price:50.90, img:'camarao-catupiry.jpg',  desc:'mussarela, camarão e catupiry.'},
-    {id:'bacon',            name:'Bacon',               price:50.90, img:'bacon.jpg',             desc:'mussarela e bacon.'},
-    {id:'bacon-ovos',       name:'Bacon c/ Ovos',       price:50.90, img:'bacon-ovos.jpg',        desc:'mussarela, bacon e ovos.'},
-    {id:'frango',           name:'Frango',              price:50.90, img:'frango.jpg',            desc:'mussarela e frango desfiado.'},
-    {id:'frango-catupiry',  name:'Frango c/ Catupiry',  price:50.90, img:'frango-catupiry.jpg',   desc:'mussarela, frango e catupiry.'},
-    {id:'portuguesa',       name:'Portuguesa',          price:50.90, img:'portuguesa.jpg',        desc:'mussarela, presunto, calabresa, pimentão, cebola, tomate e ovo.'},
-    {id:'tres-porquinhos',  name:'Três Porquinhos',     price:50.90, img:'tres-porquinhos.jpg',   desc:'mussarela, presunto, bacon e calabresa.'}
-  ];
-
-  // Doces (se quiser, adiciono depois com fotos)
-  var DOCES = [];
-  var BEBIDAS = [];
-
-  var ITEMS = [].concat(TRAD, PREM, DOCES, BEBIDAS);
-  var cart = {};
-
-  function card(it){
-    return ""
-      + "<div class='border rounded-xl overflow-hidden shadow-sm'>"
-      +   "<div class='aspect-[4/3] bg-neutral-100 overflow-hidden'>"
-      +     "<img src='assets/pizzas/"+it.img+"' alt='"+it.name+"' class='w-full h-full object-cover'>"
-      +   "</div>"
-      +   "<div class='p-3'>"
-      +     "<div class='font-semibold'>"+it.name+"</div>"
-      +     "<div class='text-xs text-neutral-600 mb-3'>"+(it.desc||"")+"</div>"
-      +     "<div class='flex items-center justify-between'>"
-      +       "<span class='text-sm font-semibold'>"+money(it.price)+"</span>"
-      +       "<div class='flex items-center gap-2'>"
-      +         "<button data-id='"+it.id+"' class='btn-add rounded-lg px-3 py-2 text-sm bg-neutral-900 text-white'>Adicionar</button>"
-      +         "<span id='qtd-"+it.id+"' class='text-sm w-6 text-center'>0</span>"
-      +         "<button data-id='"+it.id+"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200'>-</button>"
-      +       "</div>"
-      +     "</div>"
-      +   "</div>"
-      + "</div>";
-  }
-
-  function add(id){ cart[id]=(cart[id]||0)+1; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]; }
-  function rem(id){ if(!cart[id])return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]||0; }
-
-  function renderList(where, arr){
-    var el=document.getElementById(where);
-    el.innerHTML = arr.map(card).join('');
-    Array.prototype.forEach.call(el.querySelectorAll('.btn-add'), b => b.onclick=()=>add(b.dataset.id));
-    Array.prototype.forEach.call(el.querySelectorAll('.btn-rem'), b => b.onclick=()=>rem(b.dataset.id));
-  }
-
-  function renderCart(){
-    var el = document.getElementById('cart');
-    var total=0, html='';
-    for (var id in cart){
-      var it = ITEMS.find(x => x.id===id);
-      var sub = it.price*cart[id]; total+=sub;
-      html += "<div class='flex justify-between'><span>"+cart[id]+"x "+it.name+"</span><span>"+money(sub)+"</span></div>";
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pizzaria Farinha & Lenha — Pedidos</title>
+  <meta name="description" content="Pizzas de longa fermentação assadas no forno à lenha. Atendimento 18h–23h." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{ background:linear-gradient(180deg,#3b2f28 0%,#2f2722 100%) fixed; }
+    .wood{
+      background:
+        repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,rgba(0,0,0,.03) 2px 4px),
+        radial-gradient(1500px 500px at 50% -20%, rgba(255,255,255,.06), transparent 60%),
+        linear-gradient(180deg,#4a3a31 0%,#362b25 100%);
     }
-    if(!html) html = "<div class='text-neutral-500'>Seu carrinho está vazio</div>";
-    html += "<div class='mt-2 font-semibold flex justify-between'><span>Total</span><span>"+money(total)+"</span></div>";
-    el.innerHTML = html;
-  }
+    .card-anim{ transform: translateY(4px); opacity:.0; animation: pop .45s ease forwards; }
+    @keyframes pop{ to{ transform:translateY(0); opacity:1; } }
+    .glass{ backdrop-filter:saturate(130%) blur(8px); background:rgba(255,255,255,.78); }
+    .brand { color:#c0392b }            /* vermelho principal */
+    .brand-bg { background:#c0392b }
+    .brand-bg-dark { background:#8f2a1f }
+    .ink { color:#1c1b1a }
+  </style>
+</head>
+<body class="min-h-screen text-neutral-800">
 
-  function payload(){
-    var items=[], total=0;
-    for (var id in cart){
-      var it = ITEMS.find(x => x.id===id);
-      var sub = it.price*cart[id]; total+=sub;
-      items.push({id:id, name:it.name, qty:cart[id], unit:it.price, subtotal:sub});
+  <!-- topo fixo -->
+  <header class="sticky top-0 z-40">
+    <div class="wood border-b border-black/10">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="assets/logo.png" alt="Farinha & Lenha" class="w-12 h-12 rounded-md shadow border border-black/10 object-contain bg-white">
+          <div class="leading-tight">
+            <h1 class="text-xl md:text-2xl font-black text-white tracking-wide">Farinha &amp; Lenha</h1>
+            <p class="text-[11px] md:text-xs text-white/80">
+              Massa de longa fermentação • Forno à lenha • Salgadas 35 cm • Doces 25 cm
+            </p>
+          </div>
+        </div>
+        <a href="#carrinho" class="brand-bg hover:brand-bg-dark transition rounded-lg px-3 py-2 text-white text-sm font-semibold shadow">
+          Ver carrinho
+        </a>
+      </div>
+    </div>
+    <!-- Banner automático de horário -->
+    <div id="hour-banner" class="hidden bg-amber-100 text-amber-900 text-center text-sm py-2 border-b border-amber-200">
+      Oi! 😄 Nosso horário de atendimento é das <b>18h às 23h</b>. Assim que abrirmos, voltamos pra te atender rapidinho 🍕
+      <span class="block text-[11px]">📞 (22) 99229-0283 | @farinhalenha | Pizzaria Farinha & Lenha</span>
+    </div>
+  </header>
+
+  <!-- herozinho -->
+  <section class="wood">
+    <div class="max-w-6xl mx-auto px-4 pt-6 pb-4">
+      <div class="glass rounded-2xl p-4 md:p-6 shadow-lg flex items-center gap-4">
+        <div class="hidden md:block">
+          <img src="assets/logo.png" alt="Logo" class="w-20 h-20 object-contain rounded-md border border-black/10 bg-white">
+        </div>
+        <div class="text-sm md:text-base">
+          <p class="font-semibold">Bem-vindo(a) à <span class="brand font-black">Farinha &amp; Lenha</span> 🍕</p>
+          <p class="text-neutral-600">Peça pelo WhatsApp ou finalize pelo site para imprimir direto (80mm).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- conteúdo -->
+  <main class="max-w-6xl mx-auto p-4">
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- menus -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Tradicionais -->
+        <section class="bg-white/95 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-4 pt-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Tradicionais <span class="text-neutral-500">(R$ 43,90)</span></h2>
+          </div>
+          <div id="menu-trad" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+
+        <!-- Premium -->
+        <section class="bg-white/95 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-4 pt-4 flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Premium <span class="text-neutral-500">(R$ 50,90)</span></h2>
+          </div>
+          <div id="menu-prem" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+
+        <!-- Doces -->
+        <section class="bg-white/95 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Doces <span class="text-neutral-500">(R$ 30,00)</span></h2>
+          </div>
+          <div id="menu-doces" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+
+        <!-- Bebidas -->
+        <section class="bg-white/95 rounded-2xl shadow-lg overflow-hidden">
+          <div class="px-4 pt-4">
+            <h2 class="text-xl font-semibold">Bebidas</h2>
+          </div>
+          <div id="menu-bebidas" class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4"></div>
+        </section>
+      </div>
+
+      <!-- carrinho -->
+      <aside id="carrinho" class="bg-white/95 rounded-2xl shadow-lg p-4 h-max sticky top-24">
+        <h2 class="text-xl font-semibold mb-2">Seu carrinho</h2>
+        <div id="cart" class="text-sm text-neutral-700 mb-3"></div>
+
+        <div class="grid grid-cols-1 gap-2">
+          <!-- entrega ou retirada -->
+          <select id="tipo" class="border rounded-lg p-2 text-sm">
+            <option value="">Entrega ou retirada?</option>
+            <option value="retirada">Retirada no balcão</option>
+            <option value="entrega">Entrega</option>
+          </select>
+
+          <input id="bairro" class="border rounded-lg p-2 text-sm hidden" placeholder="Seu bairro (p/ calcular taxa)">
+          <input id="endereco" class="border rounded-lg p-2 text-sm hidden" placeholder="Endereço (se entrega)">
+          <input id="nome" class="border rounded-lg p-2 text-sm" placeholder="Seu nome">
+          <input id="telefone" class="border rounded-lg p-2 text-sm" placeholder="Telefone">
+          <select id="pagamento" class="border rounded-lg p-2 text-sm">
+            <option value="">Forma de pagamento</option>
+            <option>Pix</option>
+            <option>Dinheiro</option>
+            <option>Crédito</option>
+            <option>Débito</option>
+          </select>
+          <input id="troco" class="border rounded-lg p-2 text-sm" placeholder="Troco para (se dinheiro)">
+          <textarea id="obs" class="w-full border rounded-lg p-2 text-sm" rows="3" placeholder="Observações (ex.: sem cebola, cortar em 8, etc)"></textarea>
+
+          <div id="taxaInfo" class="text-xs text-neutral-600"></div>
+        </div>
+
+        <div class="mt-4 flex gap-2">
+          <button id="btn-whatsapp" class="flex-1 rounded-xl px-4 py-3 font-semibold brand-bg text-white hover:brand-bg-dark transition shadow">
+            WhatsApp
+          </button>
+          <button id="btn-site" class="flex-1 rounded-xl px-4 py-3 font-semibold bg-neutral-900 text-white hover:bg-black transition shadow">
+            Finalizar
+          </button>
+        </div>
+
+        <p class="text-xs text-neutral-500 mt-2">“Finalizar” envia para a ponte de impressão via <code>PRINT_WEBHOOK</code>.</p>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="text-center text-xs text-neutral-300 py-10">
+    © <span id="year"></span> Pizzaria Farinha & Lenha • Feito com ❤️ e forno à lenha
+  </footer>
+
+  <!-- Botão flutuante de WhatsApp -->
+  <a id="fab-wa" class="fixed bottom-4 right-4 brand-bg hover:brand-bg-dark transition text-white rounded-full w-14 h-14 grid place-content-center shadow-xl"
+     href="#" target="_blank" aria-label="WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.52 3.48a11.5 11.5 0 0 0-16.26 0c-4.49 4.49-4.49 11.77 0 16.26C6.66 22.25 9.27 23 12 23c2.06 0 4.11-.51 5.94-1.49l2.66.7-.71-2.65A11.46 11.46 0 0 0 23 12c0-2.73-.75-5.34-2.48-7.17ZM12 21c-2.19 0-4.31-.72-6.04-2.05a9.5 9.5 0 0 1 13.38-13.38A9.5 9.5 0 0 1 12 21Zm5.21-6.37c-.28-.14-1.65-.82-1.9-.91-.25-.09-.43-.14-.61.14-.18.28-.7.91-.86 1.09-.16.18-.32.2-.6.07-.28-.14-1.17-.43-2.23-1.38-.82-.73-1.37-1.63-1.53-1.9-.16-.28-.02-.43.12-.57.12-.12.28-.32.41-.48.14-.16.18-.27.27-.46.09-.18.05-.34-.02-.48-.07-.14-.61-1.47-.84-2.01-.22-.52-.44-.45-.61-.46h-.52c-.18 0-.48.07-.73.34-.25.28-.96.94-.96 2.29 0 1.35.99 2.66 1.12 2.84.14.18 1.95 2.97 4.76 4.16.67.29 1.19.46 1.6.59.67.21 1.28.18 1.76.11.54-.08 1.65-.68 1.88-1.33.23-.65.23-1.19.16-1.33-.07-.14-.25-.22-.52-.36Z"/>
+    </svg>
+  </a>
+
+  <script>
+  (function(){
+    function money(v){ return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+    const HOUR_OPEN = 18, HOUR_CLOSE = 23;
+
+    /* Config rápida (pode setar no console do site) */
+    var PRINT_WEBHOOK = localStorage.getItem('PRINT_WEBHOOK') || '';
+    var PRINT_KEY     = localStorage.getItem('PRINT_KEY') || '';
+    var WHATSAPP_NUM  = '+5522992290283';
+
+    /* ====== CARDÁPIO (usando suas fotos) ====== */
+    // Tradicionais — R$ 43,90
+    var TRAD = [
+      {id:'mussarela',  name:'Mussarela',  price:43.90, img:'pizzas/mussarela.jpg',  desc:'molho, mussarela e orégano.'},
+      {id:'calabresa',  name:'Calabresa',  price:43.90, img:'pizzas/calabresa.jpg',   desc:'molho, mussarela, calabresa e cebola.'},
+      {id:'alho',       name:'Alho',       price:43.90, img:'pizzas/alho.jpg',        desc:'molho, mussarela e alho.'},
+      {id:'presunto',   name:'Presunto',   price:43.90, img:'pizzas/presunto.jpg',    desc:'molho, mussarela e presunto.'},
+      {id:'marguerita', name:'Marguerita', price:43.90, img:'pizzas/marguerita.jpg',  desc:'molho, mussarela, tomate e manjericão.'}
+    ];
+
+    // Premium — R$ 50,90
+    var PREM = [
+      {id:'quatro-queijos',   name:'Quatro Queijos',      price:50.90, img:'pizzas/quatro-queijos.jpg',    desc:'mussarela, provolone, parmesão e catupiry.'},
+      {id:'camarao-catupiry', name:'Camarão c/ Catupiry', price:50.90, img:'pizzas/camarao-catupiry.jpg',  desc:'mussarela, camarão e catupiry.'},
+      {id:'bacon',            name:'Bacon',               price:50.90, img:'pizzas/bacon.jpg',             desc:'mussarela e bacon.'},
+      {id:'bacon-ovos',       name:'Bacon c/ Ovos',       price:50.90, img:'pizzas/bacon-ovos.jpg',        desc:'mussarela, bacon e ovos.'},
+      {id:'frango',           name:'Frango',              price:50.90, img:'pizzas/frango.jpg',            desc:'mussarela e frango desfiado.'},
+      {id:'frango-catupiry',  name:'Frango c/ Catupiry',  price:50.90, img:'pizzas/frango-catupiry.jpg',   desc:'mussarela, frango e catupiry.'},
+      {id:'portuguesa',       name:'Portuguesa',          price:50.90, img:'pizzas/portuguesa.jpg',        desc:'mussarela, presunto, calabresa, pimentão, cebola, tomate e ovo.'},
+      {id:'tres-porquinhos',  name:'Três Porquinhos',     price:50.90, img:'pizzas/tres-porquinhos.jpg',   desc:'mussarela, presunto, bacon e calabresa.'}
+    ];
+
+    // Doces — R$ 30,00
+    var DOCES = [
+      {id:'chocolate', name:'Chocolate', price:30.00, img:'pizzas/chocolate.jpg', desc:'creme de chocolate.'},
+      {id:'prestigio', name:'Prestígio', price:30.00, img:'pizzas/prestigio.jpg', desc:'chocolate com coco ralado.'},
+      {id:'pacoca',    name:'Paçoca',    price:30.00, img:'pizzas/pacoca.jpg',    desc:'chocolate com paçoca.'}
+    ];
+
+    // Bebidas
+    var BEBIDAS = [
+      {id:'guarana15',      name:'Guaraná Antártica 1,5L',       price:12.00, img:'bebidas/guarana-15.webp'},
+      {id:'guaranaZero15',  name:'Guaraná Antártica Zero 1,5L',  price:12.00, img:'bebidas/guarana-zero-15.webp'},
+      {id:'coca15',         name:'Coca-Cola 1,5L',               price:13.00, img:'bebidas/coca-15.webp'},
+      {id:'cocaZero15',     name:'Coca-Cola Zero 1,5L',          price:13.00, img:'bebidas/coca-zero-15.webp'}
+    ];
+
+    /* ====== TAXAS POR BAIRRO ====== */
+    const feeGroups = [
+      {fee:6.99,  items:["Centro"]},
+      {fee:8.00,  items:["São Bento","Passagem","Vila Nova","Jardim Machado","Itajuru","Orla da Praia","Algodoal","Parque Riviera","Braga","Parque Central","Portinho","Jardim Flamboyant","Jardim Caiçara","Palmeiras","Novo Portinho","Jardim Excelsior","São Cristóvão","São Francisco","Ville Blanche","Morubá","Buraco do Boi","Parque Burle","Praia do Siqueira (até a avenida)"]},
+      {fee:10.00, items:["Praia do Siqueira (após a avenida)","Jardim Náutilus","Guarani","Célula Máter","Jardim Olinda","Jacaré","Gamboa","Manoel Corrêa","Portinho (Ilha do Anjo)"]},
+      {fee:12.00, items:["Dunas","Recanto das Dunas","Boca do Mato"]},
+      {fee:15.00, items:["Vila do Sol","Vila do Ar","Jardim Esperança","Porto do Carro","Bosque do Peró","Condomínio dos Pássaros","Peró","Ogiva","Caminho Verde","Foguete","Baixo Grande","Vinhateiro","Monte Alegre 1 e 2"]},
+      {fee:20.00, items:["Tangará","Guriri","Jardim Peró","Reserva do Peró","Parque Eldorado","Caminho de Búzios","Minha Casa Minha Vida","Campo Redondo","Bairro São João","Parque Estoril","Alecrim"]},
+      {fee:25.00, items:["Arraial do Cabo (Centro)","São Pedro (Centro)","José Gonçalves","Aeroporto"]},
+      {fee:30.00, items:["Balneário","Poço Fundo","Praia do Sudoeste","Boqueirão","Pontal do Atalaia","Jardim das Acácias","Monte Alto"]},
+      {fee:35.00, items:["Praia Linda","Baleia","Figueira","São Mateus","Geribá","Manguinhos","Tucuns","Pórtico","Cem Braças"]},
+      {fee:40.00, items:["Búzios (Centro, João Fernandes, Pernambuco)","Iguaba Grande"]},
+      {fee:50.00, items:["Iguabinha","Tamoios"]},
+      {fee:60.00, items:["Aquarius","Bairro São João"]},
+      {fee:70.00, items:["Rio das Ostras (até a ponte)","Araruama (até o centro)"]},
+      {fee:100.00, items:["Macaé (Centro)","Saquarema (Centro)"]}
+    ];
+    function norm(s){ return (s||"").toString().toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9 ]/g,"").trim(); }
+    const feeIndex = new Map();
+    feeGroups.forEach(g=>g.items.forEach(n=>feeIndex.set(norm(n), g.fee)));
+    function findFee(bairroRaw){
+      const key = norm(bairroRaw);
+      if(!key) return null;
+      for (const [name,fee] of feeIndex.entries()){
+        if(key===name) return fee;
+      }
+      return null;
     }
-    return {items, total, nome:document.getElementById('nome').value.trim(), telefone:document.getElementById('telefone').value.trim(), obs:document.getElementById('obs').value.trim()};
-  }
 
-  function whatsappText(p){
-    var linhas = ["*Novo pedido* — Farinha & Lenha"];
-    if(p.items.length){ linhas.push(p.items.map(i=>"• "+i.qty+"x "+i.name+" — "+money(i.subtotal)).join("\n")); }
-    linhas.push("*Total:* "+money(p.total));
-    linhas.push("Nome: "+p.nome);
-    linhas.push("Telefone: "+p.telefone);
-    if(p.obs) linhas.push("Obs: "+p.obs);
-    return encodeURIComponent(linhas.join("\n"));
-  }
+    /* ====== LÓGICA ====== */
+    var ITEMS = [].concat(TRAD, PREM, DOCES, BEBIDAS);
+    var cart = {}, taxaEntrega = 0;
 
-  function mount(){
-    renderList('menu-trad', TRAD);
-    renderList('menu-prem', PREM);
-    renderList('menu-doces', DOCES);
-    renderList('menu-bebidas', BEBIDAS);
-    renderCart();
-    document.getElementById('year').textContent = new Date().getFullYear();
+    function card(it, i){
+      return ""+
+      "<div class='border rounded-xl overflow-hidden shadow-sm bg-white card-anim' style='animation-delay:"+ (i*40)+"ms'>"+
+        "<div class='aspect-[4/3] bg-neutral-100 overflow-hidden'>" +
+          "<img src='assets/"+it.img+"' alt='"+it.name+"' class='w-full h-full object-cover'>" +
+        "</div>" +
+        "<div class='p-3'>" +
+          "<div class='font-semibold ink'>"+it.name+"</div>" +
+          "<div class='text-[12px] text-neutral-600 mb-3'>"+(it.desc||"")+"</div>" +
+          "<div class='flex items-center justify-between'>" +
+            "<span class='text-sm font-bold brand'>"+money(it.price)+"</span>" +
+            "<div class='flex items-center gap-2'>" +
+              "<button data-id='"+it.id+"' class='btn-add rounded-lg px-3 py-2 text-sm brand-bg text-white hover:brand-bg-dark transition shadow'>Adicionar</button>" +
+              "<span id='qtd-"+it.id+"' class='text-sm w-6 text-center'>0</span>" +
+              "<button data-id='"+it.id+"' class='btn-rem rounded-lg px-3 py-2 text-sm bg-neutral-200 hover:bg-neutral-300 transition'>-</button>" +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>";
+    }
 
-    document.getElementById('btn-whatsapp').onclick = function(){
-      var p = payload();
-      if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
-      var url = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"") +"?text="+ whatsappText(p);
-      window.open(url, "_blank");
-    };
+    function add(id){ cart[id]=(cart[id]||0)+1; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]; }
+    function rem(id){ if(!cart[id])return; cart[id]-=1; if(cart[id]<=0) delete cart[id]; renderCart(); var q=document.getElementById('qtd-'+id); if(q) q.textContent=cart[id]||0; }
 
-    document.getElementById('btn-site').onclick = async function(){
-      var p = payload();
-      if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
-      if(!PRINT_WEBHOOK){ alert("Defina PRINT_WEBHOOK: localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')"); return; }
-      try{
-        var headers = {"Content-Type":"application/json"};
-        if(PRINT_KEY) headers["X-KEY"]=PRINT_KEY;
-        var r = await fetch(PRINT_WEBHOOK, {method:"POST", headers, body: JSON.stringify(p)});
-        if(!r.ok) throw new Error("Falha ao enviar ("+r.status+")");
-        alert("Pedido enviado!");
-      }catch(e){ alert("Erro: "+e.message); }
-    };
-  }
-  document.addEventListener('DOMContentLoaded', mount);
-})();
-</script>
+    function renderList(where, arr){
+      var el=document.getElementById(where);
+      el.innerHTML = arr.map((it,i)=>card(it,i)).join('');
+      el.querySelectorAll('.btn-add').forEach(b=>b.onclick=()=>add(b.dataset.id));
+      el.querySelectorAll('.btn-rem').forEach(b=>b.onclick=()=>rem(b.dataset.id));
+    }
+
+    function totalItens(){
+      var total=0;
+      for (var id in cart){
+        var it = ITEMS.find(x=>x.id===id);
+        total += it.price*cart[id];
+      }
+      return total;
+    }
+
+    function renderCart(){
+      var el = document.getElementById('cart');
+      var html='';
+      for (var id in cart){
+        var it = ITEMS.find(x=>x.id===id);
+        var sub = it.price*cart[id];
+        html += "<div class='flex justify-between'><span>"+cart[id]+"x "+it.name+"</span><span>"+money(sub)+"</span></div>";
+      }
+      if(!html) html = "<div class='text-neutral-500'>Seu carrinho está vazio</div>";
+      var subtotal = totalItens();
+      var totalGeral = subtotal + (taxaEntrega||0);
+      html += "<div class='mt-2 text-sm flex justify-between'><span>Subtotal</span><span>"+money(subtotal)+"</span></div>";
+      html += "<div class='text-sm flex justify-between'><span>Taxa de entrega</span><span>"+(taxaEntrega?money(taxaEntrega):"—")+"</span></div>";
+      html += "<div class='mt-1 font-semibold flex justify-between'><span>Total</span><span>"+money(totalGeral)+"</span></div>";
+      el.innerHTML = html;
+    }
+
+    function payload(){
+      var items=[], subtotal=0;
+      for (var id in cart){
+        var it = ITEMS.find(x=>x.id===id);
+        var sub = it.price*cart[id]; subtotal+=sub;
+        items.push({id:id, name:it.name, qty:cart[id], unit:it.price, subtotal:sub});
+      }
+      const tipo = document.getElementById('tipo').value || '';
+      const bairro = document.getElementById('bairro').value.trim();
+      const endereco = document.getElementById('endereco').value.trim();
+      const pagamento = document.getElementById('pagamento').value || '';
+      const troco = document.getElementById('troco').value.trim();
+
+      return {
+        items,
+        subtotal,
+        taxa: taxaEntrega || 0,
+        total: subtotal + (taxaEntrega||0),
+        tipo,
+        bairro, endereco,
+        nome: document.getElementById('nome').value.trim(),
+        telefone: document.getElementById('telefone').value.trim(),
+        pagamento, troco,
+        obs: document.getElementById('obs').value.trim()
+      };
+    }
+
+    function resumoTexto(p){
+      const linhas = [];
+      linhas.push("Perfeito 😋!");
+      if(p.items.length){
+        p.items.forEach(i=>linhas.push(`• ${i.qty}x ${i.name} — ${money(i.subtotal)}`));
+      }
+      if(p.tipo==='retirada'){
+        linhas.push("• Retirada: na Travessa Curitiba, 12 – Jardim Olinda, Cabo Frio – RJ.");
+      }else if(p.tipo==='entrega'){
+        linhas.push(`• Entrega: ${p.bairro || "—"}  • Taxa: ${p.taxa?money(p.taxa):"—"}`);
+        if(p.endereco) linhas.push(`• Endereço: ${p.endereco}`);
+      }
+      linhas.push(`• Pagamento: ${p.pagamento || "—"}` + (p.troco?` • Troco: ${p.troco}`:""));
+      linhas.push("• Tempo estimado: ~40 minutos 🍕");
+      linhas.push(`Total aproximado: ${money(p.total)}`);
+      linhas.push("");
+      linhas.push("Seu pedido será confirmado em instantes pelo nosso atendimento humano 💛");
+      linhas.push("📞 (22) 99229-0283 | @farinhalenha | Pizzaria Farinha & Lenha 🍕");
+      return linhas.join("\n");
+    }
+
+    function whatsappText(p){
+      const linhas = ["*Novo pedido* — Farinha & Lenha"];
+      if(p.items.length){ linhas.push(p.items.map(i=>`• ${i.qty}x ${i.name} — ${money(i.subtotal)}`).join("\n")); }
+      linhas.push(`*Subtotal:* ${money(p.subtotal)}`);
+      if(p.tipo==='entrega') linhas.push(`*Taxa:* ${p.taxa?money(p.taxa):"—"} (${p.bairro||"—"})`);
+      linhas.push(`*Total:* ${money(p.total)}`);
+      linhas.push(`Nome: ${p.nome}`);
+      linhas.push(`Telefone: ${p.telefone}`);
+      if(p.tipo==='entrega'){ linhas.push(`Endereço: ${p.endereco||"—"}`); }
+      if(p.pagamento) linhas.push(`Pagamento: ${p.pagamento}` + (p.troco?` | Troco: ${p.troco}`:""));
+      if(p.obs) linhas.push(`Obs: ${p.obs}`);
+      linhas.push("");
+      linhas.push(resumoTexto(p));
+      return encodeURIComponent(linhas.join("\n"));
+    }
+
+    function updateEntregaUI(){
+      const tipo = document.getElementById('tipo').value;
+      const elBairro = document.getElementById('bairro');
+      const elEnd = document.getElementById('endereco');
+      const info = document.getElementById('taxaInfo');
+
+      if(tipo==='entrega'){
+        elBairro.classList.remove('hidden');
+        elEnd.classList.remove('hidden');
+        const fee = findFee(elBairro.value);
+        if(fee!=null){
+          taxaEntrega = fee;
+          info.innerHTML = "Taxa para <b>"+elBairro.value+"</b>: "+money(fee);
+        }else{
+          taxaEntrega = 0;
+          info.innerHTML = "Informe seu bairro para calcular a taxa. <span class='text-neutral-500'>Se não encontrar, mande CEP ou ponto de referência para confirmarmos 😉</span>";
+        }
+      }else{
+        elBairro.classList.add('hidden');
+        elEnd.classList.add('hidden');
+        taxaEntrega = 0;
+        info.innerHTML = "Retirada: Travessa Curitiba, 12 – Jardim Olinda, Cabo Frio – RJ.";
+      }
+      renderCart();
+    }
+
+    function mount(){
+      // horário
+      const now = new Date(), h = now.getHours();
+      const outside = !(h >= HOUR_OPEN && h < HOUR_CLOSE);
+      document.getElementById('hour-banner').classList.toggle('hidden', !outside);
+
+      renderList('menu-trad', TRAD);
+      renderList('menu-prem', PREM);
+      renderList('menu-doces', DOCES);
+      renderList('menu-bebidas', BEBIDAS);
+      renderCart();
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // FAB WhatsApp abre conversa vazia
+      document.getElementById('fab-wa').href = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"");
+
+      // UI entrega x retirada
+      document.getElementById('tipo').addEventListener('change', updateEntregaUI);
+      document.getElementById('bairro').addEventListener('input', updateEntregaUI);
+
+      document.getElementById('btn-whatsapp').onclick = function(){
+        const p = payload();
+        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
+        if(p.tipo==='entrega' && !p.bairro){ alert('Informe o bairro para calcular a taxa.'); return; }
+        const url = "https://wa.me/"+ WHATSAPP_NUM.replace(/\D/g,"") +"?text="+ whatsappText(p);
+        window.open(url, "_blank");
+      };
+
+      document.getElementById('btn-site').onclick = async function(){
+        const p = payload();
+        if(!p.nome || !p.telefone || !p.items.length){ alert('Preencha nome, telefone e adicione itens.'); return; }
+        if(p.tipo==='entrega' && !p.bairro){ alert('Informe o bairro para calcular a taxa.'); return; }
+        if(!PRINT_WEBHOOK){ alert("Defina PRINT_WEBHOOK: localStorage.setItem('PRINT_WEBHOOK','https://SUA-URL/print')"); return; }
+        try{
+          const headers = {"Content-Type":"application/json"};
+          if(PRINT_KEY) headers["X-KEY"]=PRINT_KEY;
+          const body = JSON.stringify({...p, resumo: resumoTexto(p)});
+          const r = await fetch(PRINT_WEBHOOK, {method:"POST", headers, body});
+          if(!r.ok) throw new Error("Falha ao enviar ("+r.status+")");
+          alert("Pedido enviado para impressão!");
+        }catch(e){ alert("Erro: "+e.message); }
+      };
+
+      updateEntregaUI();
+    }
+    document.addEventListener('DOMContentLoaded', mount);
+  })();
+  </script>
+</body>
+</html>
+
